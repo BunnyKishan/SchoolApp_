@@ -1,0 +1,146 @@
+﻿@model  SchoolProj.ViewModels.TeacherViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="form-group row">
+    <div class="col-md-12">
+        <button type="button" id="btnAddNewTeacher" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> New Teacher</button>
+    </div>
+</div>
+
+<div id="teacherData_Placeholder"></div>
+
+<div class="modal fade" id="teacherModal" tabindex="-1" role="dialog" aria-labelledby="teacherModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teacherModalTitle"></h5>
+                <button type="button" id="btnCrossClose" class="close" data-dismiss="modal" title="Close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                    </div>
+
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label " })
+                            @Html.EnumDropDownListFor(model => model.Gender, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Department, htmlAttributes: new { @class = "control-label " })
+                            @Html.EnumDropDownListFor(model => model.Department, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PhoneNo, htmlAttributes: new { @class = "control-label " })
+                            @Html.EditorFor(model => model.PhoneNo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label " })
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label " })
+                            @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url: "/Teachers/GetTeachers",
+                type: "GET",
+                //data: {
+                //    message: txtMessage
+                //},
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        let json_data = data.data;
+                        let result = [];
+
+                        $.each(json_data, function (index, row) {
+                            let row_result = [];
+                            $.each(row, function (col) {
+                                row_result.push(row[col]);
+                            });
+                            result.push(row_result);
+                        });
+
+                        new gridjs.Grid({
+                            columns: [
+                                "Name",
+                                "Gender",
+                                "Department",
+                                "Phone No.",
+                                "Email",
+                                "Address",
+                                ],
+                            search: {
+                                enabled: true
+                            },
+                            sort: true,
+                            pagination: {
+                                enabled: true,
+                                limit: 5,
+                                summary: true
+                            },
+                            data: () => {
+                                return new Promise(resolve => {
+                                    setTimeout(() =>
+                                        resolve(result), 2000);
+                                });
+                            }
+                        }).render(document.getElementById("teacherData_Placeholder"));
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("error : " + error);
+                }
+            });
+        });
+
+        //[
+        //    ['John', 'john@example.com', '(353) 01 222 3333'],
+        //    ['Mark', 'mark@gmail.com', '(01) 22 888 4444']
+        //]
+    </script>
+}

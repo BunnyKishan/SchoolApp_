@@ -12,6 +12,7 @@ namespace SchoolProj.Models
         {
         }
 
+        public virtual DbSet<Teacher> Teachers { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
