@@ -14,6 +14,8 @@ namespace SchoolProj.Models
 
         public virtual DbSet<Teacher> Teachers { get; set; }
 
+        public virtual DbSet<Student> Students { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
