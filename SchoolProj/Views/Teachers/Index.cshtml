@@ -25,6 +25,8 @@
             </div>
             <div class="modal-body">
                 <form>
+                    @Html.AntiForgeryToken()
+
                     <div class="form-group">
                         @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
                         @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
@@ -172,13 +174,6 @@
 
             $("#btnSave").on("click", function () {
                 if (requiredValidation()) {
-                    //let name = $("#Name").val();
-                    //let gender = $("#Gender").val();
-                    //let department = $("#Department").val();
-                    //let phoneNo = $("#PhoneNo").val();
-                    //let email = $("#Email").val();
-                    //let address = $("#Address").val();
-
                     $.ajax({
                         url: "/Teachers/Create",
                         type: "POST",
@@ -204,13 +199,13 @@
             });
         });
 
-        //{
-        //    Name: name,
-        //        Gender: gender,
-        //            Department: department,
-        //                PhoneNo: phoneNo,
-        //                    Email: email,
-        //                        Address: address
-        //}
+            //{
+            //    Name: name,
+            //        Gender: gender,
+            //            Department: department,
+            //                PhoneNo: phoneNo,
+            //                    Email: email,
+            //                        Address: address
+            //}
     </script>
 }
