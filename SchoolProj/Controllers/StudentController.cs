@@ -11,122 +11,125 @@ using SchoolProj.Models;
 
 namespace SchoolProj.Controllers
 {
-    public class TeachersController : Controller
+    public class StudentController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Teachers
+        // GET: Student
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        public JsonResult GetTeachers()
+        public JsonResult GetStudents()
         {
-            var raw_query = db.Teachers.ToList();
-            var teachers = raw_query.Select(row => new
+            var raw_query = db.Students.ToList();
+            var students = raw_query.Select(row => new
             {
                 //Id = row.Id,
                 Name = row.Name,
                 Gender = row.Gender == Gender.Female ? "Female" : "Male",
                 PhoneNo = row.PhoneNo,
-                Department = row.Department.ToString(),
+                RollNo = row.RollNo,
+                Age = row.Age,
                 Email = row.Email,
                 Address = row.Address
             });
-            return Json(new { success = true, data = teachers }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, data = students }, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Teachers/Details/5
+        // GET: Student/Details/5
         public ActionResult Details(long? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Teacher teacher = db.Teachers.Find(id);
-            if (teacher == null)
+            Student student = db.Students.Find(id);
+            if (student == null)
             {
                 return HttpNotFound();
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // GET: Teachers/Create
+        // GET: Student/Create
         public ActionResult Create()
         {
             return View();
         }
 
+        // POST: Student/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public JsonResult Create([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
         {
             if (ModelState.IsValid)
             {
-                db.Teachers.Add(teacher);
+                db.Students.Add(student);
                 db.SaveChanges();
-
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                return RedirectToAction("Index");
             }
 
-            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            return View(student);
         }
 
-        // GET: Teachers/Edit/5
+        // GET: Student/Edit/5
         public ActionResult Edit(long? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Teacher teacher = db.Teachers.Find(id);
-            if (teacher == null)
+            Student student = db.Students.Find(id);
+            if (student == null)
             {
                 return HttpNotFound();
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // POST: Teachers/Edit/5
+        // POST: Student/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
+        public ActionResult Edit([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(teacher).State = EntityState.Modified;
+                db.Entry(student).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // GET: Teachers/Delete/5
+        // GET: Student/Delete/5
         public ActionResult Delete(long? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Teacher teacher = db.Teachers.Find(id);
-            if (teacher == null)
+            Student student = db.Students.Find(id);
+            if (student == null)
             {
                 return HttpNotFound();
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // POST: Teachers/Delete/5
+        // POST: Student/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
-            Teacher teacher = db.Teachers.Find(id);
-            db.Teachers.Remove(teacher);
+            Student student = db.Students.Find(id);
+            db.Students.Remove(student);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

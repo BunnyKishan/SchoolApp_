@@ -19,62 +19,51 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="teacherModalTitle"></h5>
-                <button type="button" id="btnCrossClose" class="close" data-dismiss="modal" title="Close" aria-label="Close">
+                <button type="button" id="btnCrossClose" class="close" title="Close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="recipient-name" class="col-form-label">Recipient:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                     </div>
+
                     <div class="form-group">
-                        <label for="message-text" class="col-form-label">Message:</label>
-                        <textarea class="form-control" id="message-text"></textarea>
+                        @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label " })
+                        @Html.EnumDropDownListFor(model => model.Gender, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
                     </div>
 
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
-                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                        </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Department, htmlAttributes: new { @class = "control-label " })
+                        @Html.EnumDropDownListFor(model => model.Department, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
+                    </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label " })
-                            @Html.EnumDropDownListFor(model => model.Gender, htmlAttributes: new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
-                        </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PhoneNo, htmlAttributes: new { @class = "control-label " })
+                        @Html.EditorFor(model => model.PhoneNo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+                    </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Department, htmlAttributes: new { @class = "control-label " })
-                            @Html.EnumDropDownListFor(model => model.Department, htmlAttributes: new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
-                        </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label " })
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.PhoneNo, htmlAttributes: new { @class = "control-label " })
-                            @Html.EditorFor(model => model.PhoneNo, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label " })
-                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label " })
-                            @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
-                        </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label " })
+                        @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" id="btnClose">Close</button>
                 <button type="button" class="btn btn-primary" id="btnSave">Save</button>
             </div>
         </div>
@@ -83,13 +72,47 @@
 
 @section Scripts{
     <script type="text/javascript">
-        $(document).ready(function () {
+        function clearTeacherModel() {
+            $("#Name").val("");
+            $("#Gender").val("0").change();
+            $("#Department").val("0").change();
+            $("#PhoneNo").val("");
+            $("#Email").val("");
+            $("#Address").val("");
+
+            $("#teacherModal").modal("hide");
+        }
+
+        function requiredValidation() {
+            let result = true;
+
+            if ($("#Name").val() == "") {
+                alert("Please, enter name.");
+                result = false;
+            }
+
+            if ($("#Gender").val() == "0") {
+                alert("Please, choose gender.");
+                result = false;
+            }
+
+            if ($("#Department").val() == "0") {
+                alert("Please, choose department.");
+                result = false;
+            }
+
+            if ($("#Email").val() == "") {
+                alert("Please, enter email.");
+                result = false;
+            }
+
+            return result;
+        }
+
+        function loadIndex() {
             $.ajax({
                 url: "/Teachers/GetTeachers",
                 type: "GET",
-                //data: {
-                //    message: txtMessage
-                //},
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: "json",
                 success: function (data) {
@@ -113,7 +136,8 @@
                                 "Phone No.",
                                 "Email",
                                 "Address",
-                                ],
+                                "Actions"
+                            ],
                             search: {
                                 enabled: true
                             },
@@ -136,11 +160,57 @@
                     console.log("error : " + error);
                 }
             });
+        }
+
+        $(document).ready(function () {
+            loadIndex();
+
+            $("#btnAddNewTeacher").on("click", function () {
+                $("#teacherModalTitle").text("Add Teacher");
+                $("#teacherModal").modal("show");
+            });
+
+            $("#btnSave").on("click", function () {
+                if (requiredValidation()) {
+                    //let name = $("#Name").val();
+                    //let gender = $("#Gender").val();
+                    //let department = $("#Department").val();
+                    //let phoneNo = $("#PhoneNo").val();
+                    //let email = $("#Email").val();
+                    //let address = $("#Address").val();
+
+                    $.ajax({
+                        url: "/Teachers/Create",
+                        type: "POST",
+                        data: $("form").serialize(),
+                        success: function (data) {
+                            if (data.success) {
+                                $("#teacherModal").modal("hide");
+                                window.location.reload();
+                            }
+                            else {
+                                alert("Something is wrong!");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("error : " + error);
+                        }
+                    });
+                }
+            });
+
+            $("#btnClose, #btnCrossClose").on("click", function () {
+                clearTeacherModel();
+            });
         });
 
-        //[
-        //    ['John', 'john@example.com', '(353) 01 222 3333'],
-        //    ['Mark', 'mark@gmail.com', '(01) 22 888 4444']
-        //]
+        //{
+        //    Name: name,
+        //        Gender: gender,
+        //            Department: department,
+        //                PhoneNo: phoneNo,
+        //                    Email: email,
+        //                        Address: address
+        //}
     </script>
 }
