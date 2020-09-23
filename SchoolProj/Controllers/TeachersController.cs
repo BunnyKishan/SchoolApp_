@@ -27,13 +27,13 @@ namespace SchoolProj.Controllers
             var raw_query = db.Teachers.ToList();
             var teachers = raw_query.Select(row => new
             {
-                //Id = row.Id,
                 Name = row.Name,
                 Gender = row.Gender == Gender.Female ? "Female" : "Male",
-                PhoneNo = row.PhoneNo,
                 Department = row.Department.ToString(),
+                PhoneNo = row.PhoneNo,
                 Email = row.Email,
-                Address = row.Address
+                Address = row.Address,
+                Id = row.Id
             });
             return Json(new { success = true, data = teachers }, JsonRequestBehavior.AllowGet);
         }

@@ -21,7 +21,7 @@ namespace SchoolProj
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
-                      "~/Scripts/gridjs.production.min.js"
+                      "~/Scripts/gridjs.development.js"
                       ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(

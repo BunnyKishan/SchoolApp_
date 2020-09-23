@@ -73,7 +73,15 @@
 </div>
 
 @section Scripts{
-    <script type="text/javascript">
+    <script type="module">
+        import {
+            h,
+            html
+        } from "/Scripts/gridjs.production.es.min.js";
+
+        let _h = h;
+        let _html = html;
+
         function clearTeacherModel() {
             $("#Name").val("");
             $("#Gender").val("0").change();
@@ -111,7 +119,20 @@
             return result;
         }
 
+        function updateTeacher(id) {
+            alert(id);
+        }
+
+        function viewTeacher(id) {
+            alert(id + " View");
+        }
+
+        function deleteTeacher(id) {
+            alert(id + " Delete");
+        }
+
         function loadIndex() {
+            $("div#teacherData_Placeholder").html("");
             $.ajax({
                 url: "/Teachers/GetTeachers",
                 type: "GET",
@@ -130,7 +151,7 @@
                             result.push(row_result);
                         });
 
-                        new gridjs.Grid({
+                        $("div#teacherData_Placeholder").Grid({
                             columns: [
                                 "Name",
                                 "Gender",
@@ -138,7 +159,31 @@
                                 "Phone No.",
                                 "Email",
                                 "Address",
-                                "Actions"
+                                {
+                                    name: 'Actions',
+                                    formatter: (cell, row) => {
+                                        let buttons = [];
+                                        buttons.push(_h('button', {
+                                            className: 'btn btn-xs btn-success',
+                                            onClick: () => updateTeacher(`'${cell}'`)
+                                        }, _html('<span class="glyphicon glyphicon-pencil"></span> Edit')));
+
+                                        buttons.push(_h('button', {
+                                            className: 'btn btn-xs btn-primary',
+                                            onClick: () => viewTeacher(`'${cell}'`)
+                                        }, _html('<span class="glyphicon glyphicon-eye-open"></span> View')));
+
+                                        buttons.push(_h('button', {
+                                            className: 'btn btn-xs btn-danger',
+                                            onClick: () => deleteTeacher(`'${cell}'`)
+                                        }, _html('<span class="glyphicon glyphicon-trash"></span> Delete')));
+
+                                        return buttons;
+                                    }
+                                    //formatter: (idCell) => _html(`<div class="row col-md-12"><a href='#' class='btn btn-link' onclick=updateTeacher('${idCell}')><span class='glyphicon glyphicon-pencil'></span> Edit</a>
+                                    //        <a href='#' class='btn btn-link' onclick=viewTeacher('${idCell}')><span class='glyphicon glyphicon-eye-open'></span> View</a>
+                                    //        <a href='#' class='btn btn-link' onclick=deleteTeacher('${idCell}')><span class="text-danger"><span class='glyphicon glyphicon-trash'></span> Delete</span></a></div>`)
+                                }
                             ],
                             search: {
                                 enabled: true
@@ -151,11 +196,10 @@
                             },
                             data: () => {
                                 return new Promise(resolve => {
-                                    setTimeout(() =>
-                                        resolve(result), 2000);
+                                    setTimeout(() => resolve(result), 2000); // equal 2 seconds
                                 });
                             }
-                        }).render(document.getElementById("teacherData_Placeholder"));
+                        });
                     }
                 },
                 error: function (xhr, status, error) {
@@ -181,7 +225,8 @@
                         success: function (data) {
                             if (data.success) {
                                 $("#teacherModal").modal("hide");
-                                window.location.reload();
+                                //window.location.reload();
+                                loadIndex();
                             }
                             else {
                                 alert("Something is wrong!");
@@ -198,14 +243,5 @@
                 clearTeacherModel();
             });
         });
-
-            //{
-            //    Name: name,
-            //        Gender: gender,
-            //            Department: department,
-            //                PhoneNo: phoneNo,
-            //                    Email: email,
-            //                        Address: address
-            //}
     </script>
 }
