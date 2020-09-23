@@ -9,6 +9,8 @@ namespace SchoolProj.ViewModels
 {
     public class TeacherViewModel
     {
+        public long Id { get; set; }
+
         [StringLength(50), Required]
         public string Name { get; set; }
 

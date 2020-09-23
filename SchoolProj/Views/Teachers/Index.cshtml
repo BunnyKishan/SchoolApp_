@@ -14,7 +14,7 @@
 
 <div id="teacherData_Placeholder"></div>
 
-<div class="modal fade" id="teacherModal" tabindex="-1" role="dialog" aria-labelledby="teacherModalLabel" aria-hidden="true">
+<div class="modal fade" id="teacherModal" tabindex="-1" role="dialog" aria-labelledby="teacherModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -26,6 +26,7 @@
             <div class="modal-body">
                 <form>
                     @Html.AntiForgeryToken()
+                    @Html.HiddenFor(r => r.Id)
 
                     <div class="form-group">
                         @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
@@ -83,6 +84,7 @@
         let _html = html;
 
         function clearTeacherModel() {
+            $("#Id").val("");
             $("#Name").val("");
             $("#Gender").val("0").change();
             $("#Department").val("0").change();
@@ -120,7 +122,41 @@
         }
 
         function updateTeacher(id) {
-            alert(id);
+            $.ajax({
+                url: "/Teachers/GetTeacherById?id=" + id + "",
+                type: "GET",
+                //data: { id: id },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        let json_data = data.data;
+                        let id = json_data.Id;
+                        let name = json_data.Name;
+                        let gender = json_data.Gender;
+                        let department = json_data.Department;
+                        let phoneNo = json_data.PhoneNo;
+                        let email = json_data.Email;
+                        let address = json_data.Address;
+
+                        $("#Id").val(id);
+                        $("#Name").val(name);
+                        $("#Gender").val(gender).change();
+                        $("#Department").val(department).change();
+                        $("#PhoneNo").val(phoneNo);
+                        $("#Email").val(email);
+                        $("#Address").val(address);
+
+                        $("#teacherModalTitle").text("Edit Teacher");
+                        $("#btnSave").attr("data-saveMode", "edit");
+
+                        $("#teacherModal").modal("show");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("error : " + error);
+                }
+            });
         }
 
         function viewTeacher(id) {
@@ -128,7 +164,30 @@
         }
 
         function deleteTeacher(id) {
-            alert(id + " Delete");
+            bootbox.confirm({
+                size: "small",
+                message: "Are you sure you want to delete?",
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/Teachers/Delete",
+                            type: "POST",
+                            data: { id: id },
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.success)
+                                    window.location.reload();
+                                else
+                                    bootbox.alert("Data not found");
+                            },
+                            error: function (xhr, status, error) {
+                                console.log("error : " + xhr);
+                            }
+                        });
+                    }
+                }
+            })
         }
 
         function loadIndex() {
@@ -165,24 +224,21 @@
                                         let buttons = [];
                                         buttons.push(_h('button', {
                                             className: 'btn btn-xs btn-success',
-                                            onClick: () => updateTeacher(`'${cell}'`)
+                                            onClick: () => updateTeacher(`${cell}`)
                                         }, _html('<span class="glyphicon glyphicon-pencil"></span> Edit')));
 
                                         buttons.push(_h('button', {
                                             className: 'btn btn-xs btn-primary',
-                                            onClick: () => viewTeacher(`'${cell}'`)
+                                            onClick: () => viewTeacher(`${cell}`)
                                         }, _html('<span class="glyphicon glyphicon-eye-open"></span> View')));
 
                                         buttons.push(_h('button', {
                                             className: 'btn btn-xs btn-danger',
-                                            onClick: () => deleteTeacher(`'${cell}'`)
+                                            onClick: () => deleteTeacher(`${cell}`)
                                         }, _html('<span class="glyphicon glyphicon-trash"></span> Delete')));
 
                                         return buttons;
                                     }
-                                    //formatter: (idCell) => _html(`<div class="row col-md-12"><a href='#' class='btn btn-link' onclick=updateTeacher('${idCell}')><span class='glyphicon glyphicon-pencil'></span> Edit</a>
-                                    //        <a href='#' class='btn btn-link' onclick=viewTeacher('${idCell}')><span class='glyphicon glyphicon-eye-open'></span> View</a>
-                                    //        <a href='#' class='btn btn-link' onclick=deleteTeacher('${idCell}')><span class="text-danger"><span class='glyphicon glyphicon-trash'></span> Delete</span></a></div>`)
                                 }
                             ],
                             search: {
@@ -213,13 +269,15 @@
 
             $("#btnAddNewTeacher").on("click", function () {
                 $("#teacherModalTitle").text("Add Teacher");
+                $("#btnSave").attr("data-saveMode", "add");
                 $("#teacherModal").modal("show");
             });
 
             $("#btnSave").on("click", function () {
                 if (requiredValidation()) {
+                    let saveMode = $("#btnSave").attr("data-saveMode");
                     $.ajax({
-                        url: "/Teachers/Create",
+                        url: saveMode == "add" ? "/Teachers/Create" : "/Teachers/Edit",
                         type: "POST",
                         data: $("form").serialize(),
                         success: function (data) {
@@ -227,9 +285,8 @@
                                 $("#teacherModal").modal("hide");
                                 window.location.reload();
                             }
-                            else {
-                                alert("Something is wrong!");
-                            }
+                            else
+                                bootbox.alert("Something is wrong!");
                         },
                         error: function (xhr, status, error) {
                             console.log("error : " + error);

@@ -28,7 +28,7 @@ namespace SchoolProj.Controllers
             var teachers = raw_query.Select(row => new
             {
                 Name = row.Name,
-                Gender = row.Gender == Gender.Female ? "Female" : "Male",
+                Gender = row.Gender.ToString(),
                 Department = row.Department.ToString(),
                 PhoneNo = row.PhoneNo,
                 Email = row.Email,
@@ -36,6 +36,19 @@ namespace SchoolProj.Controllers
                 Id = row.Id
             });
             return Json(new { success = true, data = teachers }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetTeacherById(long? id)
+        {
+            if (!id.HasValue)
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+            var teacher = db.Teachers.Find(id);
+            if (teacher != null)
+                return Json(new { success = true, data = teacher }, JsonRequestBehavior.AllowGet);
+
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Teachers/Details/5
@@ -53,12 +66,6 @@ namespace SchoolProj.Controllers
             return View(teacher);
         }
 
-        // GET: Teachers/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Create([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
@@ -74,61 +81,35 @@ namespace SchoolProj.Controllers
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Teachers/Edit/5
-        public ActionResult Edit(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Teacher teacher = db.Teachers.Find(id);
-            if (teacher == null)
-            {
-                return HttpNotFound();
-            }
-            return View(teacher);
-        }
-
-        // POST: Teachers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
+        public JsonResult Edit([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(teacher).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            return View(teacher);
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Teachers/Delete/5
-        public ActionResult Delete(long? id)
+        [HttpPost]
+        public JsonResult Delete(long? id)
         {
             if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Teacher teacher = db.Teachers.Find(id);
-            if (teacher == null)
-            {
-                return HttpNotFound();
-            }
-            return View(teacher);
-        }
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
-        // POST: Teachers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
             Teacher teacher = db.Teachers.Find(id);
-            db.Teachers.Remove(teacher);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (teacher != null)
+            {
+                db.Teachers.Remove(teacher);
+                db.SaveChanges();
+
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
