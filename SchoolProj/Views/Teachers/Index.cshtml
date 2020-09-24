@@ -84,7 +84,7 @@
         let _html = html;
 
         function clearTeacherModel() {
-            $("#Id").val("");
+            $("#Id").val(0);
             $("#Name").val("");
             $("#Gender").val("0").change();
             $("#Department").val("0").change();
@@ -269,6 +269,7 @@
 
             $("#btnAddNewTeacher").on("click", function () {
                 $("#teacherModalTitle").text("Add Teacher");
+                $("#Id").val(0);
                 $("#btnSave").attr("data-saveMode", "add");
                 $("#teacherModal").modal("show");
             });

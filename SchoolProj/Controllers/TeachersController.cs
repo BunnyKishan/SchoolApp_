@@ -70,14 +70,23 @@ namespace SchoolProj.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult Create([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Teachers.Add(teacher);
-                db.SaveChanges();
+                if (ModelState.IsValid)
+                {
+                    db.Teachers.Add(teacher);
+                    db.SaveChanges();
 
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                }
+
+                var errorList = ModelState.Where(y => y.Value.Errors.Count > 0).Select(x => new { x.Value.Errors, x.Key }).ToList();
             }
-
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
