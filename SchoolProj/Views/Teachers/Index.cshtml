@@ -264,6 +264,22 @@
             });
         }
 
+        function f1(callback) {
+            //alert("1");
+            //alert("2");
+            //alert("3");
+
+            callback(function myfunction() {
+                //alert("5");
+            });
+        }
+
+        function callbackFunc(callback2) {
+            //alert("4");
+
+            callback2();
+        }
+
         $(document).ready(function () {
             loadIndex();
 
@@ -299,6 +315,8 @@
             $("#btnClose, #btnCrossClose").on("click", function () {
                 clearTeacherModel();
             });
+            
+            f1(callbackFunc);
         });
     </script>
 }
