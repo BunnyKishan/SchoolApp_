@@ -27,16 +27,30 @@ namespace SchoolProj.Controllers
             var raw_query = db.Students.ToList();
             var students = raw_query.Select(row => new
             {
-                //Id = row.Id,
+                
                 Name = row.Name,
                 Gender = row.Gender == Gender.Female ? "Female" : "Male",
-                PhoneNo = row.PhoneNo,
                 RollNo = row.RollNo,
                 Age = row.Age,
+                PhoneNo = row.PhoneNo,
                 Email = row.Email,
-                Address = row.Address
+                Address = row.Address,
+                Id = row.Id
             });
             return Json(new { success = true, data = students }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetStudentById(long? id)
+        {
+            if (!id.HasValue)
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+            var student = db.Students.Find(id);
+            if (student != null)
+                return Json(new { success = true, data = student }, JsonRequestBehavior.AllowGet);
+
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Student/Details/5
@@ -55,83 +69,61 @@ namespace SchoolProj.Controllers
         }
 
         // GET: Student/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Student/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
+        public JsonResult Create([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Students.Add(student);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Students.Add(student);
+                    db.SaveChanges();
+
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                }
+
+                var errorList = ModelState.Where(y => y.Value.Errors.Count > 0).Select(x => new { x.Value.Errors, x.Key }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
-            return View(student);
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Student/Edit/5
-        public ActionResult Edit(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Student student = db.Students.Find(id);
-            if (student == null)
-            {
-                return HttpNotFound();
-            }
-            return View(student);
-        }
 
-        // POST: Student/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
+        public JsonResult Edit([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(student).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            return View(student);
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Student/Delete/5
-        public ActionResult Delete(long? id)
+        [HttpPost]
+        public JsonResult Delete(long? id)
         {
             if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Student student = db.Students.Find(id);
-            if (student == null)
-            {
-                return HttpNotFound();
-            }
-            return View(student);
-        }
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
-        // POST: Student/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
             Student student = db.Students.Find(id);
-            db.Students.Remove(student);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (student != null)
+            {
+                db.Students.Remove(student);
+                db.SaveChanges();
+
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

@@ -25,16 +25,11 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="form-group">
-                        <label for="recipient-name" class="col-form-label">Recipient:</label>
-                        <input type="text" class="form-control" id="recipient-name">
-                    </div>
-                    <div class="form-group">
-                        <label for="message-text" class="col-form-label">Message:</label>
-                        <textarea class="form-control" id="message-text"></textarea>
-                    </div>
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(r => r.Id)
 
-                    <div class="form-horizontal">
+
+                    <div class="modal-body">
                         <div class="form-group">
                             @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
                             @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
@@ -90,14 +85,129 @@
 </div>
 
 @section Scripts{
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script type="module">
+        import {
+            h,
+            html
+        } from "/Scripts/gridjs.production.es.min.js";
+
+        let _h = h;
+        let _html = html;
+
+        function clearStudentModel() {
+            $("#Id").val(0);
+            $("#Name").val("");
+            $("#Gender").val("0").change();
+            $("#RollNo").val("");
+            $("#Age").val("");
+            $("#PhoneNo").val("");
+            $("#Email").val("");
+            $("#Address").val("");
+
+            $("#studentModal").modal("hide");
+        }
+
+        function requiredValidation() {
+            let result = true;
+
+            if ($("#Name").val() == "") {
+                alert("Please, enter name.");
+                result = false;
+            }
+
+            if ($("#Gender").val() == "0") {
+                alert("Please, choose gender.");
+                result = false;
+            }
+
+            if ($("#RollNo").val() == "") {
+                alert("Please, enter roll number.");
+                result = false;
+            }
+
+            if ($("#Email").val() == "") {
+                alert("Please, enter email.");
+                result = false;
+            }
+
+            return result;
+        }
+
+        function updateStudent(id) {
             $.ajax({
-                url: "/Students/GetStudents",
+                url: "/Student/GetStudentById?id=" + id + "",
                 type: "GET",
-                //data: {
-                //    message: txtMessage
-                //},
+                //data: { id: id },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        let json_data = data.data;
+                        let id = json_data.Id;
+                        let name = json_data.Name;
+                        let gender = json_data.Gender;
+                        let roll = json_data.RollNo;
+                        let age = json_data.Age;
+                        let phoneNo = json_data.PhoneNo;
+                        let email = json_data.Email;
+                        let address = json_data.Address;
+
+                        $("#Id").val(id);
+                        $("#Name").val(name);
+                        $("#Gender").val(gender).change();
+                        $("#RollNo").val(roll);
+                        $("#Age").val(age);
+                        $("#PhoneNo").val(phoneNo);
+                        $("#Email").val(email);
+                        $("#Address").val(address);
+                        $("#studentModalTitle").text("Edit Student");
+                        $("#btnSave").attr("data-saveMode", "edit");
+
+                        $("#studentModal").modal("show");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("error : " + error);
+                }
+            });
+        }
+
+        function viewStudent(id) {
+            alert(id + " View");
+        }
+
+        function deleteStudent(id) {
+            bootbox.confirm({
+                size: "small",
+                message: "Are you sure you want to delete?",
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/Student/Delete",
+                            type: "POST",
+                            data: { id: id },
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.success)
+                                    window.location.reload();
+                                else
+                                    bootbox.alert("Data not found");
+                            },
+                            error: function (xhr, status, error) {
+                                console.log("error : " + xhr);
+                            }
+                        });
+                    }
+                }
+            })
+        }
+
+        function loadIndex() {
+            $("div#studentData_Placeholder").html("");
+            $.ajax({
+                url: "/Student/GetStudents",
+                type: "GET",
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: "json",
                 success: function (data) {
@@ -113,7 +223,7 @@
                             result.push(row_result);
                         });
 
-                        new gridjs.Grid({
+                        $("div#studentData_Placeholder").Grid({
                             columns: [
                                 "Name",
                                 "Gender",
@@ -122,7 +232,29 @@
                                 "Phone No.",
                                 "Email",
                                 "Address",
-                                ],
+                                {
+                                    name: 'Actions',
+                                    formatter: (cell, row) => {
+                                        let buttons = [];
+                                        buttons.push(_h('button', {
+                                            className: 'btn btn-xs btn-success',
+                                            onClick: () => updateStudent(`${cell}`)
+                                        }, _html('<span class="glyphicon glyphicon-pencil"></span> Edit')));
+
+                                        buttons.push(_h('button', {
+                                            className: 'btn btn-xs btn-primary',
+                                            onClick: () => viewStudent(`${cell}`)
+                                        }, _html('<span class="glyphicon glyphicon-eye-open"></span> View')));
+
+                                        buttons.push(_h('button', {
+                                            className: 'btn btn-xs btn-danger',
+                                            onClick: () => deleteStudent(`${cell}`)
+                                        }, _html('<span class="glyphicon glyphicon-trash"></span> Delete')));
+
+                                        return buttons;
+                                    }
+                                }
+                            ],
                             search: {
                                 enabled: true
                             },
@@ -134,22 +266,71 @@
                             },
                             data: () => {
                                 return new Promise(resolve => {
-                                    setTimeout(() =>
-                                        resolve(result), 2000);
+                                    setTimeout(() => resolve(result), 2000); // equal 2 seconds
                                 });
                             }
-                        }).render(document.getElementById("studentData_Placeholder"));
+                        });
                     }
                 },
                 error: function (xhr, status, error) {
                     console.log("error : " + error);
                 }
             });
-        });
+        }
 
-        //[
-        //    ['John', 'john@example.com', '(353) 01 222 3333'],
-        //    ['Mark', 'mark@gmail.com', '(01) 22 888 4444']
-        //]
+        function f1(callback) {
+            //alert("1");
+            //alert("2");
+            //alert("3");
+
+            callback(function myfunction() {
+                //alert("5");
+            });
+        }
+
+        function callbackFunc(callback2) {
+            //alert("4");
+
+            callback2();
+        }
+
+        $(document).ready(function () {
+            loadIndex();
+
+            $("#btnAddNewStudent").on("click", function () {
+                $("#studentModalTitle").text("Add Student");
+                $("#Id").val(0);
+                $("#btnSave").attr("data-saveMode", "add");
+                $("#studentModal").modal("show");
+            });
+
+            $("#btnSave").on("click", function () {
+                if (requiredValidation()) {
+                    let saveMode = $("#btnSave").attr("data-saveMode");
+                    $.ajax({
+                        url: saveMode == "add" ? "/Student/Create" : "/Student/Edit",
+                        type: "POST",
+                        data: $("form").serialize(),
+                        success: function (data) {
+                            if (data.success) {
+                                $("#studentModal").modal("hide");
+                                window.location.reload();
+                            }
+                            else
+                                bootbox.alert("Something is wrong!");
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("error : " + error);
+                        }
+                    });
+                }
+            });
+
+            $("#btnClose, #btnCrossClose").on("click", function () {
+                clearStudentModel();
+            });
+
+            f1(callbackFunc);
+        });
     </script>
 }

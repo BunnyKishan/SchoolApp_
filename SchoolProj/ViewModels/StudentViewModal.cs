@@ -9,6 +9,8 @@ namespace SchoolProj.ViewModels
 {
     public class StudentViewModal
     {
+        public long? Id { get; set; }
+
         [StringLength(50), Required]
         public String Name { get; set; }
 
