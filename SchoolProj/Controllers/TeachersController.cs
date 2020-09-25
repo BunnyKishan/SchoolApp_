@@ -18,6 +18,28 @@ namespace SchoolProj.Controllers
         // GET: Teachers
         public ActionResult Index()
         {
+            try
+            {
+                int x = 1;
+                int y = 0;
+                //decimal res = x / y;
+
+            }
+            catch (DivideByZeroException ex)
+            {
+                ViewBag.Message = "Cannot divided by zero. Please, put another number.";
+                return View();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                
+            }
+
             return View();
         }
 
@@ -35,6 +57,7 @@ namespace SchoolProj.Controllers
                 Address = row.Address,
                 Id = row.Id
             });
+            ViewBag.Teachers = teachers;
             return Json(new { success = true, data = teachers }, JsonRequestBehavior.AllowGet);
         }
 
@@ -86,7 +109,7 @@ namespace SchoolProj.Controllers
             {
                 throw ex;
             }
-            
+
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
@@ -124,9 +147,8 @@ namespace SchoolProj.Controllers
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 db.Dispose();
-            }
+
             base.Dispose(disposing);
         }
     }

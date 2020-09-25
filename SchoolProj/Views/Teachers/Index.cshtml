@@ -2,9 +2,10 @@
 
 @{
     ViewBag.Title = "Index";
+    var message = ViewBag.Message;
 }
 
-<h2>Index</h2>
+<h2>@ViewBag.Title</h2>
 
 <div class="form-group row">
     <div class="col-md-12">
@@ -13,6 +14,10 @@
 </div>
 
 <div id="teacherData_Placeholder"></div>
+<br />
+
+<div id="dynamicContents"></div><br />
+<div id="textArea"></div>
 
 <div class="modal fade" id="teacherModal" tabindex="-1" role="dialog" aria-labelledby="teacherModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog" role="document">
@@ -280,7 +285,38 @@
             callback2();
         }
 
+        function alertName() {
+            bootbox.alert("dddd");
+        }
+
+        function GenerateDynamicJS() {
+            let button = document.createElement("button");
+            button.setAttribute("class", "btn btn-success")
+            button.onclick = function () {
+                let txtName = document.createElement("input");
+                txtName.setAttribute("type", "text");
+                txtName.setAttribute("id", "txtName");
+                txtName.setAttribute("class", "form-control");
+                txtName.setAttribute("placeholder", "enter your name");
+                txtName.onblur = function () {
+                    alertName();
+                }
+
+                $("#textArea").html(txtName);
+                $(txtName).focus();
+            }
+            button.innerText = "Input your name";
+
+            $("#dynamicContents").append(button);
+        }
+
         $(document).ready(function () {
+            @*let message = "@message";
+            if (message != "")
+                bootbox.alert(message);*@
+
+            GenerateDynamicJS();
+
             loadIndex();
 
             $("#btnAddNewTeacher").on("click", function () {
