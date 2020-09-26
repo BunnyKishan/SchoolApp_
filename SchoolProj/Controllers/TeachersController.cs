@@ -75,18 +75,17 @@ namespace SchoolProj.Controllers
         }
 
         // GET: Teachers/Details/5
-        public ActionResult Details(long? id)
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public JsonResult Details([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
         {
-            if (id == null)
+            if (ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //db.Entry(teacher).State = EntityState.Modified;
+                //db.SaveChanges();
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            Teacher teacher = db.Teachers.Find(id);
-            if (teacher == null)
-            {
-                return HttpNotFound();
-            }
-            return View(teacher);
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
