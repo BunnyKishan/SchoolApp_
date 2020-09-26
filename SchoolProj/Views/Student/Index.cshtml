@@ -173,7 +173,25 @@
         }
 
         function viewStudent(id) {
-            alert(id + " View");
+            //alert(id + " View");
+            $.ajax({
+                url: "/Student/GetStudentById?id=" + id + "",
+                type: "GET",
+                //data: { id: id },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        let json_data = data.data;
+                        //var detail = JSON.stringify(json_data);
+                        //bootbox.alert(detail);
+                        console.log(json_data);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("error : " + error);
+                }
+            });
         }
 
         function deleteStudent(id) {
