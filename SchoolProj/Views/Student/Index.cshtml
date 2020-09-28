@@ -183,8 +183,15 @@
                 success: function (data) {
                     if (data.success) {
                         let json_data = data.data;
-                        //var detail = JSON.stringify(json_data);
-                        //bootbox.alert(detail);
+                        let id = json_data.Id;
+                        let name = json_data.Name;
+                        let gender = json_data.Gender == "1" ? "Male" : "Female";
+                        let roll = json_data.RollNo;
+                        let age = json_data.Age;
+                        let phoneNo = json_data.PhoneNo;
+                        let email = json_data.Email;
+                        let address = json_data.Address; 
+                        bootbox.alert("<h3><b>Student Detail Information<b></h3><hr>" + "ID&nbsp;:&nbsp;" + id + "<br>" + "Name&nbsp;:&nbsp;" + name + "<br>" + "Gender&nbsp;:&nbsp;" + gender + "<br>" + "Roll No&nbsp;:&nbsp;" + roll + "<br>" + "Age&nbsp;:&nbsp;" + age + "<br>" + "Phone No&nbsp;:&nbsp;" + phoneNo + "<br>" + "Email&nbsp;:&nbsp;" + email + "<br>" + "Address&nbsp;:&nbsp;" + address);
                         console.log(json_data);
                     }
                 },

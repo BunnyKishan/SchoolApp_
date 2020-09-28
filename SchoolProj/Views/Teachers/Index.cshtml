@@ -175,6 +175,14 @@
                 success: function (data) {
                     if (data.success) {
                         let json_data = data.data;
+                        let id = json_data.Id;
+                        let name = json_data.Name;
+                        let gender = json_data.Gender;
+                        let department = json_data.Department;
+                        let phoneNo = json_data.PhoneNo;
+                        let email = json_data.Email;
+                        let address = json_data.Address;
+                        bootbox.alert("<h3><b>Teacher Detail Information<b></h3><hr>" + "ID&nbsp;:&nbsp;" + id + "<br>" + "Name&nbsp;:&nbsp;" + name + "<br>" + "Gender&nbsp;:&nbsp;" + gender + "<br>" + "Department No&nbsp;:&nbsp;" + department + "<br>" + "Phone No&nbsp;:&nbsp;" + phoneNo + "<br>" + "Email&nbsp;:&nbsp;" + email + "<br>" + "Address&nbsp;:&nbsp;" + address);
                         console.log(json_data);
                     }
                 },
