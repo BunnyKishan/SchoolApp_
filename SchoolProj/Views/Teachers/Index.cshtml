@@ -177,7 +177,7 @@
                         let json_data = data.data;
                         let id = json_data.Id;
                         let name = json_data.Name;
-                        let gender = json_data.Gender;
+                        let gender = json_data.Gender == "1" ? "Male" : "Female";
                         let department = json_data.Department;
                         let phoneNo = json_data.PhoneNo;
                         let email = json_data.Email;
