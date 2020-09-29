@@ -16,7 +16,8 @@
 <div id="teacherData_Placeholder"></div>
 <br />
 
-<div id="dynamicContents"></div><br />
+<div id="dynamicContents"></div>
+<br />
 <div id="textArea"></div>
 
 <div class="modal fade" id="teacherModal" tabindex="-1" role="dialog" aria-labelledby="teacherModalLabel" aria-hidden="true" data-backdrop="static">
@@ -30,7 +31,6 @@
             </div>
             <div class="modal-body">
                 <form>
-                    @Html.AntiForgeryToken()
                     @Html.HiddenFor(r => r.Id)
 
                     <div class="form-group">
@@ -128,35 +128,33 @@
 
         function updateTeacher(id) {
             $.ajax({
-                url: "/Teachers/GetTeacherById?id=" + id + "",
+                url: "http://localhost:59832/api/Teachers/GetTeacher?id=" + id + "", //"/Teachers/GetTeacherById?id=" + id + "",
                 type: "GET",
                 //data: { id: id },
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: "json",
                 success: function (data) {
-                    if (data.success) {
-                        let json_data = data.data;
-                        let id = json_data.Id;
-                        let name = json_data.Name;
-                        let gender = json_data.Gender;
-                        let department = json_data.Department;
-                        let phoneNo = json_data.PhoneNo;
-                        let email = json_data.Email;
-                        let address = json_data.Address;
+                    let json_data = data;
+                    let id = json_data.Id;
+                    let name = json_data.Name;
+                    let gender = json_data.Gender;
+                    let department = json_data.Department;
+                    let phoneNo = json_data.PhoneNo;
+                    let email = json_data.Email;
+                    let address = json_data.Address;
 
-                        $("#Id").val(id);
-                        $("#Name").val(name);
-                        $("#Gender").val(gender).change();
-                        $("#Department").val(department).change();
-                        $("#PhoneNo").val(phoneNo);
-                        $("#Email").val(email);
-                        $("#Address").val(address);
+                    $("#Id").val(id);
+                    $("#Name").val(name);
+                    $("#Gender").val(gender).change();
+                    $("#Department").val(department).change();
+                    $("#PhoneNo").val(phoneNo);
+                    $("#Email").val(email);
+                    $("#Address").val(address);
 
-                        $("#teacherModalTitle").text("Edit Teacher");
-                        $("#btnSave").attr("data-saveMode", "edit");
+                    $("#teacherModalTitle").text("Edit Teacher");
+                    $("#btnSave").attr("data-saveMode", "edit");
 
-                        $("#teacherModal").modal("show");
-                    }
+                    $("#teacherModal").modal("show");
                 },
                 error: function (xhr, status, error) {
                     console.log("error : " + error);
@@ -165,26 +163,22 @@
         }
 
         function viewTeacher(id) {
-            //alert(id + " View");
             $.ajax({
-                url: "/Teachers/GetTeacherById?id=" + id + "",
+                url: "http://localhost:59832/api/Teachers/GetTeacher", //?id=" + id + "
                 type: "GET",
-                //data: { id: id },
+                data: { id: id },
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: "json",
                 success: function (data) {
-                    if (data.success) {
-                        let json_data = data.data;
-                        let id = json_data.Id;
-                        let name = json_data.Name;
-                        let gender = json_data.Gender == "1" ? "Male" : "Female";
-                        let department = json_data.Department;
-                        let phoneNo = json_data.PhoneNo;
-                        let email = json_data.Email;
-                        let address = json_data.Address;
-                        bootbox.alert("<h3><b>Teacher Detail Information<b></h3><hr>" + "ID&nbsp;:&nbsp;" + id + "<br>" + "Name&nbsp;:&nbsp;" + name + "<br>" + "Gender&nbsp;:&nbsp;" + gender + "<br>" + "Department No&nbsp;:&nbsp;" + department + "<br>" + "Phone No&nbsp;:&nbsp;" + phoneNo + "<br>" + "Email&nbsp;:&nbsp;" + email + "<br>" + "Address&nbsp;:&nbsp;" + address);
-                        console.log(json_data);
-                    }
+                    let json_data = data;
+                    let id = json_data.Id;
+                    let name = json_data.Name;
+                    let gender = json_data.Gender == "1" ? "Male" : "Female";
+                    let department = json_data.Department;
+                    let phoneNo = json_data.PhoneNo;
+                    let email = json_data.Email;
+                    let address = json_data.Address;
+                    bootbox.alert("<h3><b>Teacher Detail Information<b></h3><hr>" + "ID&nbsp;:&nbsp;" + id + "<br>" + "Name&nbsp;:&nbsp;" + name + "<br>" + "Gender&nbsp;:&nbsp;" + gender + "<br>" + "Department No&nbsp;:&nbsp;" + department + "<br>" + "Phone No&nbsp;:&nbsp;" + phoneNo + "<br>" + "Email&nbsp;:&nbsp;" + email + "<br>" + "Address&nbsp;:&nbsp;" + address);
                 },
                 error: function (xhr, status, error) {
                     console.log("error : " + error);
@@ -199,16 +193,21 @@
                 callback: function (result) {
                     if (result) {
                         $.ajax({
-                            url: "/Teachers/Delete",
+                            url: "http://localhost:59832/api/Teachers/DeleteTeacher?id=" + id + "", //"/Teachers/Delete",
                             type: "POST",
-                            data: { id: id },
-                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-                            dataType: "json",
+                            //data: JSON.stringify({ id: id }),
+                            //contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            //dataType: "json",
                             success: function (data) {
-                                if (data.success)
-                                    window.location.reload();
-                                else
-                                    bootbox.alert("Data not found");
+                                if (data.Id == id) {
+                                    bootbox.alert("Successfully Deleted.", function () {
+                                        window.location.reload();
+                                    });
+                                }
+                                //if (data.success)
+                                //    window.location.reload();
+                                //else
+                                //    bootbox.alert("Data not found");
                             },
                             error: function (xhr, status, error) {
                                 console.log("error : " + xhr);
@@ -353,17 +352,34 @@
             $("#btnSave").on("click", function () {
                 if (requiredValidation()) {
                     let saveMode = $("#btnSave").attr("data-saveMode");
+                    let id = $("#Id").val();
                     $.ajax({
-                        url: saveMode == "add" ? "/Teachers/Create" : "/Teachers/Edit",
-                        type: "POST",
+                        url: saveMode == "add" ? "http://localhost:59832/api/Teachers/PostTeacher" : "http://localhost:59832/api/Teachers/PutTeacher?id=" + id + "",
+                        type: saveMode == "add" ? "POST" : "PUT",
                         data: $("form").serialize(),
                         success: function (data) {
-                            if (data.success) {
+                            if (data.Id == id) {
                                 $("#teacherModal").modal("hide");
-                                window.location.reload();
+                                bootbox.alert("Successfully Updated.", function () {
+                                    window.location.reload();
+                                });
                             }
-                            else
+                            else if (data.Id > 0) {
+                                $("#teacherModal").modal("hide");
+                                bootbox.alert("Successfully Created.", function () {
+                                    window.location.reload();
+                                });
+                            }
+                            else {
                                 bootbox.alert("Something is wrong!");
+                            }
+                            //window.location.reload();
+                            //if (data.success) {
+                            //    $("#teacherModal").modal("hide");
+                            //    window.location.reload();
+                            //}
+                            //else
+                            //    bootbox.alert("Something is wrong!");
                         },
                         error: function (xhr, status, error) {
                             console.log("error : " + error);
@@ -375,7 +391,7 @@
             $("#btnClose, #btnCrossClose").on("click", function () {
                 clearTeacherModel();
             });
-            
+
             f1(callbackFunc);
         });
     </script>
