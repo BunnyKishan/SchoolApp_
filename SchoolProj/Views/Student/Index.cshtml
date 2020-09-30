@@ -135,14 +135,14 @@
 
         function updateStudent(id) {
             $.ajax({
-                url: "/Student/GetStudentById?id=" + id + "",
+                url: "http://localhost:59832/api/Students/GetStudent?id=" + id + "", //"/Student/GetStudentById?id=" + id + "",
                 type: "GET",
                 //data: { id: id },
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: "json",
                 success: function (data) {
-                    if (data.success) {
-                        let json_data = data.data;
+
+                        let json_data = data;
                         let id = json_data.Id;
                         let name = json_data.Name;
                         let gender = json_data.Gender;
@@ -164,7 +164,6 @@
                         $("#btnSave").attr("data-saveMode", "edit");
 
                         $("#studentModal").modal("show");
-                    }
                 },
                 error: function (xhr, status, error) {
                     console.log("error : " + error);
@@ -173,16 +172,14 @@
         }
 
         function viewStudent(id) {
-            //alert(id + " View");
             $.ajax({
-                url: "/Student/GetStudentById?id=" + id + "",
+                url: "http://localhost:59832/api/Students/GetStudent",
                 type: "GET",
-                //data: { id: id },
+                data: { id: id },
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: "json",
                 success: function (data) {
-                    if (data.success) {
-                        let json_data = data.data;
+                        let json_data = data;
                         let id = json_data.Id;
                         let name = json_data.Name;
                         let gender = json_data.Gender == "1" ? "Male" : "Female";
@@ -192,8 +189,6 @@
                         let email = json_data.Email;
                         let address = json_data.Address; 
                         bootbox.alert("<h3><b>Student Detail Information<b></h3><hr>" + "ID&nbsp;:&nbsp;" + id + "<br>" + "Name&nbsp;:&nbsp;" + name + "<br>" + "Gender&nbsp;:&nbsp;" + gender + "<br>" + "Roll No&nbsp;:&nbsp;" + roll + "<br>" + "Age&nbsp;:&nbsp;" + age + "<br>" + "Phone No&nbsp;:&nbsp;" + phoneNo + "<br>" + "Email&nbsp;:&nbsp;" + email + "<br>" + "Address&nbsp;:&nbsp;" + address);
-                        console.log(json_data);
-                    }
                 },
                 error: function (xhr, status, error) {
                     console.log("error : " + error);
@@ -208,16 +203,21 @@
                 callback: function (result) {
                     if (result) {
                         $.ajax({
-                            url: "/Student/Delete",
+                            url: "http://localhost:59832/api/Students/DeleteStudent?id=" + id + "",//"/Student/Delete",
                             type: "POST",
-                            data: { id: id },
-                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-                            dataType: "json",
+                            //data: { id: id },
+                            //contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            // dataType: "json",
                             success: function (data) {
-                                if (data.success)
-                                    window.location.reload();
-                                else
-                                    bootbox.alert("Data not found");
+                                if (data.Id == id) {
+                                    bootbox.alert("Successfully Deleted.", function () {
+                                        window.location.reload();
+                                    });
+                                }
+                                //if (data.success)
+                                //    window.location.reload();
+                                //else
+                                //    bootbox.alert("Data not found");
                             },
                             error: function (xhr, status, error) {
                                 console.log("error : " + xhr);
@@ -332,17 +332,27 @@
             $("#btnSave").on("click", function () {
                 if (requiredValidation()) {
                     let saveMode = $("#btnSave").attr("data-saveMode");
+                    let id = $("#Id").val();
                     $.ajax({
-                        url: saveMode == "add" ? "/Student/Create" : "/Student/Edit",
-                        type: "POST",
+                        url: saveMode == "add" ? "http://localhost:59832/api/Students/PostStudent" : "http://localhost:59832/api/Students/PutStudent?id=" + id + "",
+                        type: saveMode == "add" ? "POST" : "PUT",
                         data: $("form").serialize(),
                         success: function (data) {
-                            if (data.success) {
+                            if (data.Id == id) {
                                 $("#studentModal").modal("hide");
-                                window.location.reload();
+                                bootbox.alert("Successfully Updated.", function () {
+                                    window.location.reload();
+                                });
                             }
-                            else
+                            else if (data.Id > 0) {
+                                $("#studentModal").modal("hide");
+                                bootbox.alert("Successfully Created.", function () {
+                                    window.location.reload();
+                                });
+                            }
+                            else {
                                 bootbox.alert("Something is wrong!");
+                            }
                         },
                         error: function (xhr, status, error) {
                             console.log("error : " + error);

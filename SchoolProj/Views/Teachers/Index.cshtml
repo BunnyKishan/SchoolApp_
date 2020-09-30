@@ -352,7 +352,7 @@
             $("#btnSave").on("click", function () {
                 if (requiredValidation()) {
                     let saveMode = $("#btnSave").attr("data-saveMode");
-                    let id = $("#Id").val();
+                    
                     $.ajax({
                         url: saveMode == "add" ? "http://localhost:59832/api/Teachers/PostTeacher" : "http://localhost:59832/api/Teachers/PutTeacher?id=" + id + "",
                         type: saveMode == "add" ? "POST" : "PUT",

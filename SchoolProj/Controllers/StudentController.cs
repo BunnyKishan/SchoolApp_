@@ -17,7 +17,7 @@ namespace SchoolProj.Controllers
 
         // GET: Student
         public ActionResult Index()
-        {
+        {     
             return View();
         }
 
@@ -54,7 +54,7 @@ namespace SchoolProj.Controllers
         }
 
         // GET: Student/Details/5
-        [HttpPost]
+        [HttpGet]
         [ValidateAntiForgeryToken]
         public JsonResult Details([Bind(Include = "Id,Name,Gender,RollNo,Age,PhoneNo,Email,Address")] Student student)
         {
