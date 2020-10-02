@@ -8,6 +8,8 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
+    @Html.Partial("_ModalLayout")
+
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -23,7 +25,7 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("Teachers", "Index", "Teachers")</li>
+                    <li>@Html.ActionLink("Teachers", "Index", "TeachersBoostrapTable")</li>
                     <li>@Html.ActionLink("Students", "Index", "Student")</li>
                 </ul>
             </div>

@@ -1,0 +1,126 @@
+﻿@model IEnumerable<SchoolProj.Models.Teacher>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="form-group row">
+    <div class="col-md-12">
+        <button type="button" id="btnAddNewTeacher" class="btn btn-success" onclick="getTeacherForm(event)"><span class="glyphicon glyphicon-plus"></span> New Teacher</button>
+    </div>
+</div>
+
+<table id="teacherGrid"
+       data-toggle="table"
+       data-url="@Url.Action("GetTeachers", "TeachersBoostrapTable")"
+       data-query-params="queryParams"
+       data-side-pagination="server"
+       data-page-list="[5, 10, 20, 50]"
+       data-pagination="true"
+       data-sort-name="Name"
+       data-sort-order="asc">
+    <thead>
+        <tr>
+            <th data-field="Id" data-formatter="formatterEdit" data-align="center">Edit</th>
+            <th data-field="Name" data-sortable="true">
+                Name
+            </th>
+            <th data-field="Gender" data-sortable="true">
+                Gender
+            </th>
+            <th data-field="Department" data-sortable="true">
+                Department
+            </th>
+            <th data-field="PhoneNo" data-sortable="true">
+                PhoneNo
+            </th>
+            <th data-field="Email" data-sortable="false">
+                Email
+            </th>
+            <th data-field="Address" data-sortable="false">
+                Address
+            </th>
+            <th data-field="Id" data-formatter="formatterDelete" data-align="center">Delete</th>
+        </tr>
+    </thead>
+</table>
+
+@section Scripts {
+    @*<script src="~/Scripts/custom.js"></script>*@
+<script type="text/javascript">
+    function queryParams(params) {
+        var customParams = core.helpers.grid.getFiltersById('#teacherGrid', params);
+        // search
+        var searchItems = [];
+        customParams.SearchText = JSON.stringify(searchItems);
+        return customParams;
+    }
+
+	function formatterDelete(value, row, index) {
+		let link = '@Html.ActionLink(" ", "Delete", "TeachersBoostrapTable", null,
+					new { @class = "glyphicon glyphicon-trash text-danger", title = "Delete", onclick = "deleteTeacher(event, data)" })'
+		link = link.replace('data', value);
+		return link;
+	}
+
+	function deleteTeacher(event, data) {
+		event.preventDefault();
+		let url = $(event.target).attr('href');
+        bootbox.confirm({
+            size: "small",
+            message: "Are you sure you want to delete?",
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: url,
+                        data: { id: data },
+                        success: function (data) {
+                            alert("Deleted");
+                            $('#modal').modal('hide');
+                            $('#teacherGrid').bootstrapTable('refresh');
+                        }
+                    });
+                }
+            }
+        });
+	}
+
+	function formatterEdit(value) {
+		var link = '@Html.ActionLink(" ", "Edit", "TeachersBoostrapTable", new { id = "data"},
+                new { @class = "glyphicon glyphicon-pencil", title = "Edit" , onclick= "getTeacherForm(event)" })';
+		link = link.replace('data', value);
+		return link;
+    }
+
+    function getTeacherForm(event) {
+		event.preventDefault();
+		let url = $(event.target).attr('href') == undefined ?
+			'@Url.Action("Create", "TeachersBoostrapTable")' : $(event.target).attr('href');
+        let title = $(event.target).attr('href') == undefined ? 'Add Teacher' : 'Edit Teacher';
+
+		$.ajax({
+			type: "GET",
+			url: url,
+			contentType: "application/json; charset=utf-8",
+			dataType: "html",
+			success: function (data) {
+				if (data) {
+					core.modal.document(
+						title,
+						data,
+						null,
+						function () { }
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.log("error : " + error);
+			}
+		});
+    }
+</script>
+}

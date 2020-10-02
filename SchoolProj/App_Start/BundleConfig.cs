@@ -22,13 +22,16 @@ namespace SchoolProj
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/gridjs.development.js",
-                      "~/Scripts/bootbox.min.js"
+                      "~/Scripts/bootbox.min.js",
+                      "~/Scripts/bootstrap-table.js",
+                      "~/Scripts/helper.js"
                       ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/Content/gridjs.mermaid.min.css"
+                      "~/Content/gridjs.mermaid.min.css",
+                      "~/Content/bootstrap-table.css"
                       ));
         }
     }
