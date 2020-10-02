@@ -225,65 +225,6 @@
 				$('#modal').modal('show');
 			}, 200);
 		}
-	},
-
-	formatData: {
-		defaultDate: function (value) {
-			if (value === null) {
-				return '-';
-			}
-			var formattedDate = new Date(value);
-			var d = formattedDate.getDate();
-			var m = formattedDate.getMonth();
-			m += 1;  // JavaScript months are 0-11
-			var y = formattedDate.getFullYear();
-
-			return (d + "/" + m + "/" + y);
-		},
-		defaultDecimal: function (value) {
-			if (value === undefined || value == null)
-				return '-';
-			
-			var valFormat = core.helpers.input.roundNum(value);
-			valFormat = core.helpers.addCommas(valFormat);
-
-			return valFormat;
-		}
-	},
-
-	helpers: {
-		grid: {
-            getFiltersById: function (id, params) {
-				var gridData = $(id).bootstrapTable('getOptions');
-				params.sortName = gridData.sortName == undefined ? params.sort : gridData.sortName;
-				params.sortOrder = gridData.sortOrder == undefined ? params.order : gridData.sortOrder;
-				params.pageNumber = gridData.pageNumber == undefined ? 1 : gridData.pageNumber;
-				params.pageSize = gridData.pageSize == undefined ? params.limit : gridData.pageSize;
-				return params;
-			}
-		},
-		input: {
-			roundNum: function (num) {
-				if (num != null) {
-					num = num.toString().replace(/,/g, '');
-				}
-				if (!$.isNumeric(num)) {
-					return num;
-				}
-				return parseFloat(num).toFixed(2);
-			}
-		},
-		addCommas: function(nStr){
-			nStr += '';
-			var x = nStr.split('.');
-			var x1 = x[0];
-			var x2 = x.length > 1 ? '.' + x[1] : '';
-			var rgx = /(\d+)(\d{3})/;
-			while (rgx.test(x1)) {
-				x1 = x1.replace(rgx, '$1' + ',' + '$2');
-			}
-			return x1 + x2;
-		}
 	}
 };
 
