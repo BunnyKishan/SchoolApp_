@@ -164,46 +164,46 @@
 					});
 			}, 200);
 		},
-        confirm: function (title, message, okCallback, cancelCallback, size, buttonOkText, buttonCancelText, buttonOkClass, buttonCancelClass) {
-            $('#modal').modal('hide');
-            setTimeout(function () {
-                core.modal.resetDefaultSetting();
-                size = size === undefined ? '' : size;
-                $('#modal .modal-dialog').addClass(size);
-                $('#modalTitle').text(title);
-                $('#modal .content').empty();
-                $('#modalMsg').html(message);
-                $('#btn_cancel').addClass(buttonCancelClass || 'btn-primary');
-                $('#btn_ok').addClass(buttonOkClass || 'btn-default');
+		confirm: function (title, message, okCallback, cancelCallback, size, buttonOkText, buttonCancelText, buttonOkClass, buttonCancelClass) {
+			$('#modal').modal('hide');
+			setTimeout(function () {
+				core.modal.resetDefaultSetting();
+				size = size === undefined ? '' : size;
+				$('#modal .modal-dialog').addClass(size);
+				$('#modalTitle').text(title);
+				$('#modal .content').empty();
+				$('#modalMsg').html(message);
+				$('#btn_cancel').addClass(buttonCancelClass || 'btn-primary');
+				$('#btn_ok').addClass(buttonOkClass || 'btn-default');
 
-                if (buttonCancelText) {
-                    $('#btn_cancel').text(buttonCancelText);
-                }
+				if (buttonCancelText) {
+					$('#btn_cancel').text(buttonCancelText);
+				}
 
-                if (buttonOkText) {
-                    $('#btn_ok').text(buttonOkText);
-                }
+				if (buttonOkText) {
+					$('#btn_ok').text(buttonOkText);
+				}
 
-                if ($('#btn_cancel').hasClass('hide')) {
-                    $('#btn_cancel').removeClass('hide');
-                }
+				if ($('#btn_cancel').hasClass('hide')) {
+					$('#btn_cancel').removeClass('hide');
+				}
 
-                if ($('#modal .modal-footer').hasClass('hide')) {
-                    $('#modal .modal-footer').removeClass('hide');
-                }
+				if ($('#modal .modal-footer').hasClass('hide')) {
+					$('#modal .modal-footer').removeClass('hide');
+				}
 
-                $('#modal').modal('show');
-                // register event
-                $("#modal").off("click", "#btn_ok")
-                    .on("click", "#btn_ok", function () {
-                        okCallback();
-                    });
-                $("#modal").off("click", "#btn_cancel")
-                    .on("click", "#btn_cancel", function () {
-                        cancelCallback();
-                    });
-            }, 200);
-        },
+				$('#modal').modal('show');
+				// register event
+				$("#modal").off("click", "#btn_ok")
+					.on("click", "#btn_ok", function () {
+						okCallback();
+					});
+				$("#modal").off("click", "#btn_cancel")
+					.on("click", "#btn_cancel", function () {
+						cancelCallback();
+					});
+			}, 200);
+		},
 		document: function (title, html, size, callbackShow) {
 			$('#modal').modal('hide');
 			$('#modal').on('shown.bs.modal', function (event) {
@@ -224,6 +224,65 @@
 					$('#modal .modal-footer').addClass('hide');
 				$('#modal').modal('show');
 			}, 200);
+		}
+	},
+
+	formatData: {
+		defaultDate: function (value) {
+			if (value === null) {
+				return '-';
+			}
+			var formattedDate = new Date(value);
+			var d = formattedDate.getDate();
+			var m = formattedDate.getMonth();
+			m += 1;  // JavaScript months are 0-11
+			var y = formattedDate.getFullYear();
+
+			return (d + "/" + m + "/" + y);
+		},
+		defaultDecimal: function (value) {
+			if (value === undefined || value == null)
+				return '-';
+
+			var valFormat = core.helpers.input.roundNum(value);
+			valFormat = core.helpers.addCommas(valFormat);
+
+			return valFormat;
+		}
+	},
+
+	helpers: {
+		grid: {
+			getFiltersById: function (id, params) {
+				var gridData = $(id).bootstrapTable('getOptions');
+				params.sortName = gridData.sortName == undefined ? params.sort : gridData.sortName;
+				params.sortOrder = gridData.sortOrder == undefined ? params.order : gridData.sortOrder;
+				params.pageNumber = gridData.pageNumber == undefined ? 1 : gridData.pageNumber;
+				params.pageSize = gridData.pageSize == undefined ? params.limit : gridData.pageSize;
+				return params;
+			}
+		},
+		input: {
+			roundNum: function (num) {
+				if (num != null) {
+					num = num.toString().replace(/,/g, '');
+				}
+				if (!$.isNumeric(num)) {
+					return num;
+				}
+				return parseFloat(num).toFixed(2);
+			}
+		},
+		addCommas: function (nStr) {
+			nStr += '';
+			var x = nStr.split('.');
+			var x1 = x[0];
+			var x2 = x.length > 1 ? '.' + x[1] : '';
+			var rgx = /(\d+)(\d{3})/;
+			while (rgx.test(x1)) {
+				x1 = x1.replace(rgx, '$1' + ',' + '$2');
+			}
+			return x1 + x2;
 		}
 	}
 };
