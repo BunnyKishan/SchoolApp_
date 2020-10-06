@@ -12,6 +12,8 @@
     </div>
 </div>
 
+@Html.AntiForgeryToken()
+
 <table id="teacherGrid"
        data-toggle="table"
        data-url="@Url.Action("GetTeachers", "TeachersBoostrapTable")"
@@ -47,9 +49,11 @@
     </thead>
 </table>
 
+@*<button type="button" class="btn btn-success"><span class="fa fa-5x fa-spinner fa-spin"></span></button>*@
+
 @section Scripts {
     @*<script src="~/Scripts/custom.js"></script>*@
-<script type="text/javascript">
+    <script type="text/javascript">
     function queryParams(params) {
         var customParams = core.helpers.grid.getFiltersById('#teacherGrid', params);
         // search
@@ -73,14 +77,21 @@
             message: "Are you sure you want to delete?",
             callback: function (result) {
                 if (result) {
+                    let __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
                     $.ajax({
                         cache: false,
                         type: "POST",
                         url: url,
-                        data: { id: data },
-                        success: function (data) {
+                        data: { id: data, __RequestVerificationToken: __RequestVerificationToken },
+                        success: function (response) {
                             $('#modal').modal('hide');
-                            $('#teacherGrid').bootstrapTable('refresh');
+                            if (response.success) {
+                                bootbox.alert("Successfull Delete.");
+                                $('#teacherGrid').bootstrapTable('refresh');
+                            }
+                            else {
+                                bootbox.alert("Could not delete, please try again.");
+                            }
                         }
                     });
                 }
@@ -121,5 +132,5 @@
 			}
 		});
     }
-</script>
+    </script>
 }

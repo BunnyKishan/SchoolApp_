@@ -73,14 +73,27 @@ namespace SchoolProj.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
         {
-            if (ModelState.IsValid)
+            object jsonObj = null;
+            try
             {
-                db.Teachers.Add(teacher);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Teachers.Add(teacher);
+                    db.SaveChanges();
+
+                    jsonObj = new { success = true, id = teacher.Id };
+                }
+                else
+                {
+                    jsonObj = new { success = false, message = "Some fields are missing or invalid." };
+                }
+            }
+            catch (Exception)
+            {
+                jsonObj = new { success = true, message = "Could not udpate, please try again." };
             }
 
-            return View(teacher);
+            return Json(jsonObj, JsonRequestBehavior.AllowGet);
         }
 
         // GET: TeachersBoostrapTable/Edit/5
@@ -105,13 +118,27 @@ namespace SchoolProj.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Gender,Department,PhoneNo,Email,Address")] Teacher teacher)
         {
-            if (ModelState.IsValid)
+            object jsonObj = null;
+            try
             {
-                db.Entry(teacher).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(teacher).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    jsonObj = new { success = true, id = teacher.Id };
+                }
+                else
+                {
+                    jsonObj = new { success = false, message = "Some fields are missing or invalid." };
+                }
             }
-            return View(teacher);
+            catch (Exception ex)
+            {
+                jsonObj = new { success = true, message = "Could not udpate, please try again." };
+            }
+
+            return Json(jsonObj, JsonRequestBehavior.AllowGet);
         }
 
         // POST: TeachersBoostrapTable/Delete/5
@@ -119,10 +146,21 @@ namespace SchoolProj.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(long id)
         {
-            Teacher teacher = db.Teachers.Find(id);
-            db.Teachers.Remove(teacher);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            bool isSuccess = false;
+            try
+            {
+                Teacher teacher = db.Teachers.Find(id);
+                db.Teachers.Remove(teacher);
+                db.SaveChanges();
+
+                isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+            }
+
+            return Json(new { success = isSuccess }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

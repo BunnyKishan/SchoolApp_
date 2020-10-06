@@ -4,7 +4,7 @@
     Layout = null;
 }
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm("Create", "TeachersBoostrapTable", FormMethod.Post, htmlAttributes: new { @id = "createTeacherForm" })) 
 {
     @Html.AntiForgeryToken()
     
@@ -60,8 +60,34 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-success" />
+                <input type="button" value="Create" class="btn btn-success" onclick="submitFormAjax(event)" />
             </div>
         </div>
     </div>
 }
+
+<script type="text/javascript">
+    function submitFormAjax(event) {
+	    event.preventDefault();
+        let form = $('#createTeacherForm');
+	    //if (form.valid()) {
+		    
+     //   }
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function (response) {
+                $('#modal').modal('hide');
+                if (response.success) {
+                    bootbox.alert("Successfull Created.");
+                    $('#teacherGrid').bootstrapTable('refresh');
+                }
+                else {
+                    bootbox.alert(response.message);
+                }
+            }
+        });
+    }
+</script>

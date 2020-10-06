@@ -31,7 +31,8 @@ namespace SchoolProj
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
                       "~/Content/gridjs.mermaid.min.css",
-                      "~/Content/bootstrap-table.css"
+                      "~/Content/bootstrap-table.css",
+                      "~/Content/font-awesome.css"
                       ));
         }
     }
